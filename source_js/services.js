@@ -2,7 +2,7 @@ var mp4Services = angular.module('mp4Services', []);
 
 mp4Services.factory('CommonData', function(){
     var data = "";
-    return{
+    return {
         getData : function(){
             return data;
         },

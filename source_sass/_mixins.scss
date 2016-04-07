@@ -1,1 +1,14 @@
-// Insert your mixins
+@mixin horizontal-align() {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@mixin vertical-align-out() {
+    position: relative;
+}
+
+@mixin vertical-align-in() {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}

@@ -1,1 +1,61 @@
-// Add any custom Sass & CSS here
+h1, h3, h4, h5, h6, p, li, div, a {
+    font-family: $font-fira;
+}
+
+
+
+#main-menu {
+    height: 100vh;
+    border: 1px solid #777;
+
+    .menu {
+        height: 100%;
+    }
+
+    li {
+        position: relative;
+        border-bottom: 1px solid #777;
+        height: 15%;
+
+        a {
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.75em;
+        }
+    }
+}
+
+.active {
+
+}
+
+#fluid {
+    max-width: 100rem !important;
+
+    .columns {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+#content-view {
+    height: 100vh;
+
+    .view-wrapper {
+        padding-left: 2%;
+        padding-right: 2%;
+        height: 100%;
+    }
+}
+
+#settings {
+    height: 100%;
+
+    .row {
+        @include horizontal-align();
+        width: 85%;
+    }
+}

@@ -1,16 +1,22 @@
-<div class="list" ng-controller='SettingsController'>		
-	<form>
-	  <div class="row">
-          <div class="small-12 columns">
-            <input ng-model="url" type="text" placeholder="URL">
-          </div>
-      </div>
-
-    <div class="text-center">
-      <button ng-click="setUrl()" class="button tiny info">Set URL</button>
+<div ng-controller='SettingsController' id="settings">		
+    <div class="row">
+        <div class="small-12 columns">
+            <h1>Set the default API endpoint</h1>
+        </div>
     </div>
-
-    {{displayText}}
-
-  </form>
+    <div class="row">
+        <div class="small-12 columns">
+            <h3>Current: {{urlDisplay}}</h3>
+        </div>        
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <div class="input-group">
+                <input class="input-group-field" type="text" placeholder="http://localhost:4000" ng-model="url">
+                <div class="input-group-button">
+                    <input type="submit" class="button" value="Set" ng-click="setUrl()">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,6 +1,6 @@
 var mp4Controllers = angular.module('mp4Controllers', []);
 
-mp4Controllers.controller('FirstController', ['$scope', 'CommonData'  , function($scope, CommonData) {
+mp4Controllers.controller('UsersController', ['$scope', 'CommonData'  , function($scope, CommonData) {
   $scope.data = "";
    $scope.displayText = ""
 
@@ -12,6 +12,40 @@ mp4Controllers.controller('FirstController', ['$scope', 'CommonData'  , function
 
 }]);
 
+mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData'  , function($scope, CommonData) {
+  $scope.data = "";
+   $scope.displayText = ""
+
+  $scope.setData = function(){
+    CommonData.setData($scope.data);
+    $scope.displayText = "Data set"
+
+  };
+}]);
+
+mp4Controllers.controller('TasksController', ['$scope', 'CommonData'  , function($scope, CommonData) {
+  $scope.data = "";
+   $scope.displayText = ""
+
+  $scope.setData = function(){
+    CommonData.setData($scope.data);
+    $scope.displayText = "Data set"
+
+  };
+}]);
+
+mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData'  , function($scope, CommonData) {
+  $scope.data = "";
+   $scope.displayText = ""
+
+  $scope.setData = function(){
+    CommonData.setData($scope.data);
+    $scope.displayText = "Data set"
+
+  };
+}]);
+
+
 mp4Controllers.controller('SecondController', ['$scope', 'CommonData' , function($scope, CommonData) {
   $scope.data = "";
 
@@ -21,7 +55,6 @@ mp4Controllers.controller('SecondController', ['$scope', 'CommonData' , function
   };
 
 }]);
-
 
 mp4Controllers.controller('LlamaListController', ['$scope', '$http', 'Llamas', '$window' , function($scope, $http,  Llamas, $window) {
 
@@ -33,12 +66,13 @@ mp4Controllers.controller('LlamaListController', ['$scope', '$http', 'Llamas', '
 }]);
 
 mp4Controllers.controller('SettingsController', ['$scope' , '$window' , function($scope, $window) {
-  $scope.url = $window.sessionStorage.baseurl;
+    $scope.url = $window.sessionStorage.baseurl;
+    $scope.urlDisplay = $window.sessionStorage.baseurl;
 
-  $scope.setUrl = function(){
-    $window.sessionStorage.baseurl = $scope.url;
-    $scope.displayText = "URL set";
-
-  };
+    // sets the url for the api in the session storage
+    $scope.setUrl = function() {
+        $window.sessionStorage.baseurl = $scope.url;
+        $scope.urlDisplay = $scope.url;
+    };
 
 }]);
