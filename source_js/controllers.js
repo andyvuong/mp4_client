@@ -65,7 +65,9 @@ mp4Controllers.controller('LlamaListController', ['$scope', '$http', 'Llamas', '
 
 }]);
 
-mp4Controllers.controller('SettingsController', ['$scope' , '$window' , function($scope, $window) {
+mp4Controllers.controller('SettingsController', ['$scope', '$window', 'mongoInterface', function($scope, $window, mongoInterface) {
+    $scope.menSet = 'active';
+
     $scope.url = $window.sessionStorage.baseurl;
     $scope.urlDisplay = $window.sessionStorage.baseurl;
 
@@ -74,5 +76,4 @@ mp4Controllers.controller('SettingsController', ['$scope' , '$window' , function
         $window.sessionStorage.baseurl = $scope.url;
         $scope.urlDisplay = $scope.url;
     };
-
 }]);
