@@ -1,4 +1,4 @@
-<div ng-controller='UsersController'>
+<div>
     <div id="users-wrapper">
         <div class="row">
             <div class="small-5 columns">
@@ -9,15 +9,15 @@
             </div>   
             <hr>
         </div>
-        <div class="row">
+        <div class="row" ng-repeat='user in data.users'>
             <div class="small-5 columns">
-                
+                <h5>{{user.name}}</h5>
             </div>
             <div class="small-5 columns">
-                
+                <h5>{{user.email}}</h5>
             </div> 
             <div class="small-2 columns">
-                
+                <a class="alert button" ng-click="deleteUser(user._id)">Delete</a>
             </div> 
             <hr>       
         </div>
@@ -25,7 +25,7 @@
             <div class="small-5 columns"></div>
             <div class="small-5 columns"></div> 
             <div class="small-2 columns">
-                <a class="success button" href="#">Add User</a>
+                <a href="#/addusers" class="success button" >Add User</a>
             </div>  
         </div>
     </div>

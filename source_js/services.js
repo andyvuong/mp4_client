@@ -2,18 +2,20 @@ var mp4Services = angular.module('mp4Services', []);
 
 mp4Services.factory('CommonData', function(){
     var data = "";
+    var users = [];
     return {
-        getData : function(){
-            return data;
+        getUsers : function(){
+            return users;
         },
-        setData : function(newData){
-            data = newData;
+        setUsers : function(newData){
+            users = newData;
         }
     }
 });
 
 mp4Services.factory('mongoInterface', function($http, $window) {
     return {
+
         /*
          * @param {String} route the api route to use
          * @param {Object} parameters object of query parameters
@@ -35,8 +37,20 @@ mp4Services.factory('mongoInterface', function($http, $window) {
          * @param {Object} parameters object of post parameters
          */
         post : function(route, parameters) {
+            var dataObj = $.param({
+                name: parameters.name,
+                email: parameters.email
+            });
+            
+            var url = $window.sessionStorage.baseurl + '/api/' + route;  
+            return $http({ method: 'POST', url: url, data: dataObj, headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+});
+            /*
+            console.log(JSON.stringify(parameters));
+            //$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
             var url = $window.sessionStorage.baseurl + '/api/' + route;  
             return $http.post(url, parameters);
+*/
         },
         /*
          * @param {String} route the api route to use

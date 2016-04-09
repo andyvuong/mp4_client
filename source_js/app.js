@@ -10,6 +10,10 @@ app.config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/userdetails.html',
     controller: 'UserDetailController'
   }).
+  when('/addusers', {
+    templateUrl: 'partials/addusers.html',
+    controller: 'UserAddController'
+  }).
   when('/settings', {
     templateUrl: 'partials/settings.html',
     controller: 'SettingsController'

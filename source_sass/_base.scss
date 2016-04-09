@@ -2,8 +2,6 @@ h1, h3, h4, h5, h6, p, li, div, a {
     font-family: $font-fira;
 }
 
-
-
 #main-menu {
     height: 100vh;
     border: 1px solid #777;
@@ -29,11 +27,12 @@ h1, h3, h4, h5, h6, p, li, div, a {
 }
 
 .active {
-    background: blue;
+    background: $color-oj;
 }
 
 #fluid {
-    max-width: 100rem !important;
+    max-width: 100% !important;
+    width: 100%;
 
     .columns {
         padding-left: 0 !important;
@@ -45,17 +44,36 @@ h1, h3, h4, h5, h6, p, li, div, a {
     height: 100vh;
 
     .view-wrapper {
-        padding-left: 2%;
-        padding-right: 2%;
+        padding: 2% 2% 2% 2%;
         height: 100%;
     }
 }
 
-#settings {
+#settings-wrapper {
     height: 100%;
 
     .row {
         @include horizontal-align();
         width: 85%;
+    }
+}
+
+#users-wrapper {
+    
+}
+
+#addusers-wrapper {
+    position: relative;
+
+    .row {
+        width: 75%;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    span {
+        color: red;
     }
 }
