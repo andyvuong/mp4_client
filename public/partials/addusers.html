@@ -1,0 +1,34 @@
+<div>
+    <div id="addusers-wrapper">
+        <div class="row">
+            <div class="small-12 columns">
+                <h2>Add User</h2>
+            </div>    
+            <hr>
+        </div>
+        <div class="row">
+            <div class="small-12 columns">
+                <label>
+                    Full Name <span>*</span>
+                    <input type="text" placeholder="Jane Doe" ng-model="name">
+                </label>
+                <label>
+                    Email Address <span>*</span>
+                    <input type="email" placeholder="person@mail.com" ng-model="email">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-4 columns"></div>
+            <div class="small-4 columns">
+                <a href="#/users" class="alert button">Cancel</a>
+            </div> 
+            <div class="small-4 columns">
+                <a href="#/addusers" class="success button" ng-click="addUser()">Add</a>
+            </div>  
+        </div>
+        <div clas="row">
+            <span>{{alert}}</span>
+        </div>
+    </div>
+</div>

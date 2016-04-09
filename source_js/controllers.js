@@ -6,6 +6,7 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
         users : CommonData.getUsers()
     }
 
+    // makes an api call to the database to get user data
     var reloadUserList = function() {
         mongoInterface.get('users', {})
             .success(function(data, status, headers, config) {
@@ -24,6 +25,11 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
     if ($scope.data.users.length == 0) {
         reloadUserList();
     }
+
+    // updates all the tasks and removes the user id/name of the user that was removed.
+    var updateAllTasks = function() {
+        // TODO
+    };
 
     // delete from model first then common data
     $scope.deleteUser = function(id) {
@@ -54,18 +60,19 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
     }
 }]);
 
-mp4Controllers.controller('UserAddController', ['$scope', 'CommonData', 'mongoInterface', function($scope, CommonData, mongoInterface) {
+mp4Controllers.controller('UserAddController', ['$scope', 'CommonData', 'mongoInterface', '$location', function($scope, CommonData, mongoInterface, $location) {
     $scope.name = '';
     $scope.email = '';
     $scope.alert = '';
 
-    var displayError = function() {
-        $scope.alert = 'Your name or email is invalid!'
+    var displayError = function(msg) {
+        $scope.alert = msg;
     };
 
+    // adds a new user to the app
     $scope.addUser = function() {
         if ($scope.name.length == 0 || typeof $scope.email === 'undefined' || $scope.email.length == 0) {
-            displayError();
+            displayError('Validation Error: A valid name and email is required.');
             $scope.email = '';
             $scope.name = '';
         }
@@ -75,9 +82,14 @@ mp4Controllers.controller('UserAddController', ['$scope', 'CommonData', 'mongoIn
                     console.log("User was Added: " + data);
                     $scope.email = '';
                     $scope.name = '';
+
+                    // redirect and reload
+                    CommonData.setUsers([]); // sets empty so the user view refreshes
+                    $location.path('/users');
                 })
                 .error(function(data, status, header, config) {
-
+                    console.log("An error occured adding the user.");
+                    displayError(data.message);
                 });
         }
     };
