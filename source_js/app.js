@@ -6,7 +6,7 @@ app.config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/users.html',
     controller: 'UsersController'
   }).
-  when('/usersdetails/:id', {
+  when('/userdetails/:id', {
     templateUrl: 'partials/userdetails.html',
     controller: 'UserDetailController'
   }).

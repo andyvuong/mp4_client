@@ -44,7 +44,7 @@ h1, h3, h4, h5, h6, p, li, div, a {
     min-height: 100vh;
 
     .view-wrapper {
-        padding: 2% 2% 2% 2%;
+        margin: 2% 2% 2% 2%;
         height: 100%;
     }
 }
@@ -66,11 +66,29 @@ h1, h3, h4, h5, h6, p, li, div, a {
     position: relative;
 
     .row {
-        width: 75%;
+        width: 85%;
     }
 
     .button {
         width: 100%;
+    }
+
+    span {
+        color: red;
+    }
+}
+
+#userdetails-wrapper {
+    position: relative;
+
+    .row {
+        width: 95%;
+        margin-left: 0.5%;
+    }
+
+    .load-button {
+        width: 35% !important;
+        @include horizontal-align();
     }
 
     span {

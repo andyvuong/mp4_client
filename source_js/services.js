@@ -43,8 +43,8 @@ mp4Services.factory('mongoInterface', function($http, $window) {
             });
             
             var url = $window.sessionStorage.baseurl + '/api/' + route;  
-            return $http({ method: 'POST', url: url, data: dataObj, headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
-});
+            //return $http({ method: 'POST', url: url, data: dataObj, headers : {'Content-Type': 'application/x-www-form-urlencoded'} });
+            return $http.post(url, parameters);
             /*
             console.log(JSON.stringify(parameters));
             //$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
