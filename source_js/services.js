@@ -4,11 +4,14 @@ mp4Services.factory('CommonData', function(){
     var data = "";
     var users = [];
     return {
-        getUsers : function(){
+        getUsers : function() {
             return users;
         },
-        setUsers : function(newData){
+        setUsers : function(newData) {
             users = newData;
+        },
+        clearCached : function() {
+            users = [];
         }
     }
 });
