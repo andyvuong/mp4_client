@@ -13,7 +13,15 @@
         <div class="row">
             <hr>
             <div class="small-12 columns">
-                <h3>Pending Tasks</h3>
+                <div class="row">
+                    <div class="small-6 columns">
+                        <h3>Pending Tasks</h3>
+                    </div>
+                    <div class="small-5 columns">
+                        <h5>Deadline</h5>
+                    </div>
+                    <div class="small-1 columns"></div>
+                </div>
                 <div class="row detail-row" ng-repeat="pending in pendingTasks"> 
                     <div class="small-6 columns">
                         <h5>{{pending.name}}</h5>

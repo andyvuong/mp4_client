@@ -26,9 +26,36 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
         reloadUserList();
     }
 
-    // updates all the tasks and removes the user id/name of the user that was removed.
-    var updateAllTasks = function(taskList) {
-        // TODO
+    // updates a task and sets assigned properties
+    var updateTask = function(id) {
+        mongoInterface.put('tasks', id, { assignedUser: "", assignedUserName: "unassigned" })
+            .success(function(data, status, header, config) {
+                console.log("Task was updated")
+            })
+            .error(function(data, status, header, config) {
+                console.log("An error occured adding the user.");
+                displayError(data.message);
+            });
+    }
+
+    // Updates all pending tasks for a deleted user (any task assigned to that user and marked
+    //  completed: false  ). Note that other tasks that have been completed are left alone.
+    var updateAllTasks = function(userId) {
+        var queryParams = {
+            where: {'assignedUser' : userId, 'completed': false}
+        };
+
+        mongoInterface.get('tasks',  queryParams)
+            .success(function(data, status, header, config) {
+                //console.log(data);
+                taskList = data.data;
+                for (var i = 0; i < taskList.length; i++) {
+                    updateTask(taskList[i]._id);
+                }
+            })
+            .error(function(data, status, header, config) {
+                console.log("An error occured updated the tasks of the deleted user.");
+            }); 
 
     };
 
@@ -36,10 +63,11 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
     $scope.deleteUser = function(id) {
         // delete from scope first
         var user = ''; // user to be deleted
+
         var i = 0;
         for (i = 0; i < $scope.data.users.length; i++) {
             if ($scope.data.users[i]._id === id) {
-                user = user[i]; // save user in case of error
+                user = $scope.data.users[i]; // save user in case of error
                 $scope.data.users.splice(i, 1);
                 break;
             }
@@ -52,7 +80,7 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
                 //console.log(data);
                 console.log('Deleted User');
                 //reloadUserList();
-                //updateAllTasks(user.pendingTasks);
+                updateAllTasks(user._id);
             })
             .error(function(data, status, headers, config) {
                 console.log('There was an error loading the data');
@@ -119,6 +147,12 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
             .success(function(data, status, header, config) {
                 console.log(data);
                 $scope.pendingTasks = data.data;
+
+                // convert dates to a more readable format
+                for (var i = 0; i < $scope.pendingTasks.length; i++) {
+                    var d = (new Date($scope.pendingTasks[i].deadline)).toDateString();
+                    $scope.pendingTasks[i].deadline = d;
+                }
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured viewing the user pending tasks.");
@@ -135,6 +169,11 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
             .success(function(data, status, header, config) {
                 //console.log(data);
                 $scope.completedTasks = data.data;
+
+                for (var i = 0; i < $scope.completedTasks.length; i++) {
+                    var d = (new Date($scope.completedTasks[i].deadline)).toDateString();
+                    $scope.completedTasks[i].deadline = d;
+                }
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured viewing the user pending tasks.");
