@@ -1,3 +1,5 @@
+$(document).ready(function() {
+
 var divs = document.getElementsByClassName('alert');
 for(var i=0; i<divs.length; i++) {
   divs[i].addEventListener("click", highlightThis);
@@ -42,3 +44,5 @@ function doHighlight(url) {
 
 var url = window.location.href;
 doHighlight(url);
+
+});

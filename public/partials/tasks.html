@@ -1,0 +1,49 @@
+<div>
+    <div id="tasks-wrapper">
+        <div class="row">
+            <div class="small-10 columns">
+                <h2>Tasks</h2>
+            </div>
+            <div class="small-2 columns">
+                <a class="success button float-right" ng-click="">Add</a>
+            </div>   
+            <hr>
+        </div>
+        <div class="row">
+            <div class="small-6 columns">
+                <fieldset class="large-6 columns">
+                    <input ng-click="setStatusField('pending')" type="radio" name="order1" value="pending" id="button-pending"><label for="button-pending">Pending</label>
+                    <input ng-click="setStatusField('complete')" type="radio" name="order1" value="complete" id="button-complete"><label for="button-complete">Complete</label>
+                    <input ng-click="setStatusField('all')" type="radio" name="order1" value="all" id="button-all" required><label for="button-all">All</label>
+                </fieldset>
+                <select ng-model='sortByField' id="selector">
+                    <option value="dateCreated">dateCreated</option>
+                    <option value="deadline">deadline</option>
+                    <option value="name">name</option>
+                    <option value="assignedUser">assignedUser</option>
+                </select>
+            </div>
+            <div class="small-6 columns">
+                <fieldset class="large-6 columns float-right">
+                    <input ng-click="setOrderingValue(1)" type="radio" name="order2" value="ascending" id="button-ascending" required><label for="button-ascending">Ascending</label>
+                    <input ng-click="setOrderingValue(-1)" type="radio" name="order2" value="descending" id="button-descending"><label for="button-descending">Descending</label>
+                </fieldset>
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="small-6 columns">
+                <a class="info button float-left" ng-click="">Previous</a>
+            </div>
+            <div class="small-6 columns">
+                <a class="info button float-right" ng-click="">Next</a>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+        <div clas="row">
+            <span>{{alert}}</span>
+        </div>
+    </div>
+</div>

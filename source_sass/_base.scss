@@ -59,7 +59,12 @@ h1, h3, h4, h5, h6, p, li, div, a {
 }
 
 #users-wrapper {
-    
+    position: relative;
+
+    .row {
+        width: 85%;
+        margin-left: 0.5%;
+    }
 }
 
 #addusers-wrapper {
@@ -67,6 +72,7 @@ h1, h3, h4, h5, h6, p, li, div, a {
 
     .row {
         width: 85%;
+        margin-left: 0.5%;
     }
 
     .button {
@@ -93,5 +99,35 @@ h1, h3, h4, h5, h6, p, li, div, a {
 
     span {
         color: red;
+    }
+}
+
+#tasks-wrapper {
+    position: relative;
+
+    .row {
+        width: 95%;
+        margin-left: 0.5%;
+    }
+
+    .load-button {
+        width: 35% !important;
+        @include horizontal-align();
+    }
+
+    span {
+        color: red;
+    }
+
+    .success {
+        margin-top: 10px;
+    }
+
+    select {
+        width: 55%;
+    }
+
+    .info {
+        width: 30%;
     }
 }

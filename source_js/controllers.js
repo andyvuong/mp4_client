@@ -1,5 +1,18 @@
 var mp4Controllers = angular.module('mp4Controllers', []);
 
+mp4Controllers.controller('SettingsController', ['$scope', '$window', 'mongoInterface', 'CommonData', function($scope, $window, mongoInterface, CommonData) {
+
+    $scope.url = $window.sessionStorage.baseurl;
+    $scope.urlDisplay = $window.sessionStorage.baseurl;
+
+    // sets the url for the api in the session storage
+    $scope.setUrl = function() {
+        $window.sessionStorage.baseurl = $scope.url;
+        $scope.urlDisplay = $scope.url;
+        CommonData.clearCached();
+    };
+}]);
+
 mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInterface', '$window', '$location', function($scope, CommonData, mongoInterface, $window, $location) {
   
     $scope.data = {
@@ -237,15 +250,87 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
 
 }]);
 
-mp4Controllers.controller('TasksController', ['$scope', 'CommonData'  , function($scope, CommonData) {
-  $scope.data = "";
-   $scope.displayText = ""
+mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout', 'mongoInterface', function($scope, CommonData, $timeout, mongoInterface) {
+    
+    // set the default buttons and select value on the view
+    $timeout(function() {
+        angular.element('#button-ascending').trigger('click');
+        angular.element('#button-pending').trigger('click');
+        angular.element('#selector').val('dateCreated');
+    }, 50);
 
-  $scope.setData = function(){
-    CommonData.setData($scope.data);
-    $scope.displayText = "Data set"
+    // variables passed into reload
+    $scope.orderingValue = 1; // radio
+    $scope.sortByField = 'dateCreated'; // dropdown
+    $scope.statusField = false; // radio
 
-  };
+    /**
+     * Makes an API call to the server to retrieve task.
+     * 
+     */
+    var reloadTaskList = function(ordering, sortByField, status) {
+
+
+        var queryParams = {};
+
+        if (status === 'all') {
+            queryParams = {
+                select: {"dateCreated": 0}, // exclude
+                sort: { sortByField: ordering } // string - number
+                //skip: 10,
+                //limit: 10
+            };
+        }
+        else {
+            queryParams = {
+                where: {'completed': status},
+                select: {"dateCreated": 0}, // exclude
+                sort: { sortByField: ordering } // string - number
+                //skip: 10,
+                //limit: 10
+            };
+        }
+
+        mongoInterface.get('tasks', queryParams)
+            .success(function(data, status, headers, config) {
+                $scope.tasks = data.data;
+                console.log($scope.tasks);
+            })
+            .error(function(data, status, headers, config) {
+                console.log('There was an error loading the data');
+            });
+    };
+
+    // click handler for ascending or descending
+    $scope.setOrderingValue = function(value) {
+        $scope.orderingValue = value;
+    };
+
+    // click handler for getting pending, complete, all
+    $scope.setStatusField = function(value) {
+        if (value === 'pending') {
+            $scope.statusField = false;
+        }
+        else if (value === 'complete') {
+            $scope.statusField = true;
+        }
+        else if (value === 'all') {
+            $scope.statusField = 'all';
+        }
+        else {
+            console.log("Error occured");
+        }
+    };
+
+    // listens for any of the user options to change and makes an api call
+    $scope.reload = function() { // TODO sortby
+        reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField);
+    }
+
+    $scope.$watch('sortByField', $scope.reload, true);
+    $scope.$watch('statusField', $scope.reload, true);
+    $scope.$watch('orderingValue', $scope.reload, true);
+
 }]);
 
 mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData'  , function($scope, CommonData) {
@@ -257,37 +342,4 @@ mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData'  , fun
     $scope.displayText = "Data set"
 
   };
-}]);
-
-
-mp4Controllers.controller('SecondController', ['$scope', 'CommonData' , function($scope, CommonData) {
-  $scope.data = "";
-
-  $scope.getData = function(){
-    $scope.data = CommonData.getData();
-
-  };
-
-}]);
-
-mp4Controllers.controller('LlamaListController', ['$scope', '$http', 'Llamas', '$window' , function($scope, $http,  Llamas, $window) {
-
-  Llamas.get().success(function(data){
-    $scope.llamas = data;
-  });
-
-
-}]);
-
-mp4Controllers.controller('SettingsController', ['$scope', '$window', 'mongoInterface', 'CommonData', function($scope, $window, mongoInterface, CommonData) {
-
-    $scope.url = $window.sessionStorage.baseurl;
-    $scope.urlDisplay = $window.sessionStorage.baseurl;
-
-    // sets the url for the api in the session storage
-    $scope.setUrl = function() {
-        $window.sessionStorage.baseurl = $scope.url;
-        $scope.urlDisplay = $scope.url;
-        CommonData.clearCached();
-    };
 }]);
