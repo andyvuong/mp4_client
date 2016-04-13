@@ -20,7 +20,7 @@
                     <option value="dateCreated">dateCreated</option>
                     <option value="deadline">deadline</option>
                     <option value="name">name</option>
-                    <option value="assignedUser">assignedUser</option>
+                    <option value="assignedUserName">assignedUserName</option>
                 </select>
             </div>
             <div class="small-6 columns">
@@ -39,8 +39,18 @@
                 <a class="info button float-right" ng-click="">Next</a>
             </div>
         </div>
-        <div class="row">
-
+        <div class="row" ng-repeat="task in tasks">
+            <hr>
+            <div class="small-5 columns">
+                <h5>{{task.name}}</h5>
+            </div>
+            <div class="small-5 columns">
+                <h6><strong>Deadline:</strong> {{task.deadline}}</h6>
+                <h6><strong>Assigned to:</strong> {{task.assignedUserName}}</h6>
+            </div>
+            <div class="small-2 columns">
+                <a class="alert button float-right">Delete</a>
+            </div>
         </div>
         <div clas="row">
             <span>{{alert}}</span>

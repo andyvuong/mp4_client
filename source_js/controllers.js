@@ -47,7 +47,6 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured adding the user.");
-                displayError(data.message);
             });
     }
 
@@ -252,6 +251,12 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
 
 mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout', 'mongoInterface', function($scope, CommonData, $timeout, mongoInterface) {
     
+    $scope.alert = '';
+
+    var displayError = function(msg) {
+        $scope.alert = msg;
+    };
+
     // set the default buttons and select value on the view
     $timeout(function() {
         angular.element('#button-ascending').trigger('click');
@@ -269,14 +274,11 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
      * 
      */
     var reloadTaskList = function(ordering, sortByField, status) {
-
-
         var queryParams = {};
 
         if (status === 'all') {
             queryParams = {
-                select: {"dateCreated": 0}, // exclude
-                sort: { sortByField: ordering } // string - number
+                select: {"dateCreated": 0} // exclude
                 //skip: 10,
                 //limit: 10
             };
@@ -284,20 +286,29 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
         else {
             queryParams = {
                 where: {'completed': status},
-                select: {"dateCreated": 0}, // exclude
-                sort: { sortByField: ordering } // string - number
+                select: {"dateCreated": 0}// exclude
                 //skip: 10,
                 //limit: 10
             };
         }
+        queryParams.sort = {};
+        queryParams.sort[sortByField] = ordering; // string - number
 
+        console.log(queryParams);
         mongoInterface.get('tasks', queryParams)
             .success(function(data, status, headers, config) {
                 $scope.tasks = data.data;
-                console.log($scope.tasks);
+
+                // convert dates to a more readable format
+                for (var i = 0; i < $scope.tasks.length; i++) {
+                    var d = (new Date($scope.tasks[i].deadline)).toDateString();
+                    $scope.tasks[i].deadline = d;
+                }
+                //console.log($scope.tasks);
             })
             .error(function(data, status, headers, config) {
                 console.log('There was an error loading the data');
+                displayError(data.message);
             });
     };
 
