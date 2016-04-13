@@ -257,6 +257,8 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
         $scope.alert = msg;
     };
 
+    $scope.paginationStart = 0; // set to skip
+
     // set the default buttons and select value on the view
     $timeout(function() {
         angular.element('#button-ascending').trigger('click');
@@ -273,12 +275,14 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
      * Makes an API call to the server to retrieve task.
      * 
      */
-    var reloadTaskList = function(ordering, sortByField, status) {
+    var reloadTaskList = function(ordering, sortByField, status, skipVal) {
         var queryParams = {};
 
         if (status === 'all') {
             queryParams = {
-                select: {"dateCreated": 0} // exclude
+                select: {"dateCreated": 0}, // exclude
+                limit: 11,
+                skip: skipVal
                 //skip: 10,
                 //limit: 10
             };
@@ -286,7 +290,9 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
         else {
             queryParams = {
                 where: {'completed': status},
-                select: {"dateCreated": 0}// exclude
+                select: {"dateCreated": 0}, // exclude
+                limit: 11,
+                skip: skipVal
                 //skip: 10,
                 //limit: 10
             };
@@ -333,9 +339,35 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
         }
     };
 
+    // click handler for next
+    $scope.next = function() {
+        console.log($scope.tasks.length);
+        console.log($scope.paginationStart);
+        if ($scope.tasks.length < 11) {
+            console.log("No more");
+        }
+        else {
+            $scope.paginationStart = $scope.paginationStart + 10;
+            reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField, $scope.paginationStart);    
+        }
+        
+    };
+
+    // click handler for previous
+    $scope.previous = function() {
+        if ($scope.paginationStart - 10 < 0) {
+            $scope.paginationStart = 0;
+        }  
+        else {
+            $scope.paginationStart = $scope.paginationStart - 10;
+        }
+        reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField, $scope.paginationStart);
+    };
+
     // listens for any of the user options to change and makes an api call
     $scope.reload = function() { // TODO sortby
-        reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField);
+        $scope.paginationStart = 0; // reset pagination
+        reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField, $scope.paginationStart);
     }
 
     $scope.$watch('sortByField', $scope.reload, true);
