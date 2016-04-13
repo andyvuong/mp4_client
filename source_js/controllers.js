@@ -249,7 +249,7 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
 
 }]);
 
-mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout', 'mongoInterface', function($scope, CommonData, $timeout, mongoInterface) {
+mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout', 'mongoInterface', '$location', function($scope, CommonData, $timeout, mongoInterface, $location) {
     
     $scope.alert = '';
 
@@ -273,7 +273,6 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
 
     /**
      * Makes an API call to the server to retrieve task.
-     * 
      */
     var reloadTaskList = function(ordering, sortByField, status, skipVal) {
         var queryParams = {};
@@ -339,6 +338,11 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
         }
     };
 
+    // click handler for tasks
+    $scope.goToTaskDetail = function(id) {
+        $location.path('/taskdetails/'+id);
+    };
+
     // click handler for next
     $scope.next = function() {
         console.log($scope.tasks.length);
@@ -368,12 +372,74 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
     $scope.reload = function() { // TODO sortby
         $scope.paginationStart = 0; // reset pagination
         reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField, $scope.paginationStart);
-    }
+    };
+
+    // remove a pending id from a user list for which that task id was deleted
+    var updateUserList = function(userId, taskId) {
+        // get the user, iterate through their pendingTasks and remove their task
+        var queryParams = {
+            where: {'_id' : userId}
+        };
+
+        mongoInterface.get('users',  queryParams)
+            .success(function(data, status, header, config) {
+                var user = data.data[0];
+                var pending = user.pendingTasks;
+
+                for (var i = 0; i < pending.length; i++) {
+                    if (pending[i] === taskId) {
+                        pending.splice(i, 1); // remove taskid from pending
+                        break;
+                    }
+                }
+
+                // update the user
+                mongoInterface.put('users', userId, { pendingTasks: pending})
+                    .success(function(data, status, header, config) {
+                        console.log("User was updated: " + data);
+                    })
+                    .error(function(data, status, header, config) {
+                        console.log("An error occured updating the user.");
+                    });
+            })
+            .error(function(data, status, header, config) {
+                console.log("An error occured updated the tasks of the deleted user.");
+            }); 
+    };
+
+    // delete a task
+    $scope.deleteTask = function(id) {
+        var task = ''; // user to be deleted
+
+        var i = 0;
+        for (i = 0; i < $scope.tasks.length; i++) {
+            if ($scope.tasks[i]._id === id) {
+                task = $scope.tasks[i]; // save user in case of error
+                $scope.tasks.splice(i, 1);
+                break;
+            }
+        }
+
+        // delete from database
+        mongoInterface.delete('tasks', id)
+            .success(function(data, status, headers, config) {
+                console.log('Deleted task');
+
+                // only update a user if the task deleted was actually assigned
+                if (typeof task.assignedUser !== 'undefined' && task.assignedUser !== '' && task.completed != true) {
+                    updateUserList(task.assignedUser, id);    
+                }
+            })
+            .error(function(data, status, headers, config) {
+                console.log('There was an error loading the data');
+                $scope.tasks.splice(i, 0, task);
+            });
+    };
 
     $scope.$watch('sortByField', $scope.reload, true);
     $scope.$watch('statusField', $scope.reload, true);
     $scope.$watch('orderingValue', $scope.reload, true);
-
+    // TODO delete task from task list + user it was assigned to if was, add task goto, task detail goto, 
 }]);
 
 mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData'  , function($scope, CommonData) {

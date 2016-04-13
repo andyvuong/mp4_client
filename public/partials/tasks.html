@@ -5,7 +5,7 @@
                 <h2>Tasks</h2>
             </div>
             <div class="small-2 columns">
-                <a class="success button float-right" ng-click="">Add</a>
+                <a href="#/addtasks" class="success button float-right">Add</a>
             </div>   
             <hr>
         </div>
@@ -42,14 +42,14 @@
         <div class="row" ng-repeat="task in tasks">
             <hr>
             <div class="small-5 columns">
-                <h5>{{task.name}}</h5>
+                <h5 ng-click="goToTaskDetail(task._id)">{{task.name}}</h5>
             </div>
             <div class="small-5 columns">
                 <h6><strong>Deadline:</strong> {{task.deadline}}</h6>
                 <h6><strong>Assigned to:</strong> {{task.assignedUserName}}</h6>
             </div>
             <div class="small-2 columns">
-                <a class="alert button float-right">Delete</a>
+                <a ng-click="deleteTask(task._id)" class="alert button float-right">Delete</a>
             </div>
         </div>
         <div clas="row">
