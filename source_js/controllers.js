@@ -142,13 +142,18 @@ mp4Controllers.controller('UserAddController', ['$scope', 'CommonData', 'mongoIn
     };
 }]);
 
-mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mongoInterface', '$routeParams', function($scope, CommonData, mongoInterface, $routeParams) {
+mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mongoInterface', '$routeParams', '$location', function($scope, CommonData, mongoInterface, $routeParams, $location) {
     $scope.alert = '';
     $scope.id = $routeParams.id;
 
     var displayError = function(msg) {
         $scope.alert = msg;
     }
+
+    // click handler for tasks
+    $scope.goToTaskDetail = function(id) {
+        $location.path('/taskdetails/'+id);
+    };
 
     var getPendingTasks = function() {
         var queryParams = {
@@ -170,7 +175,7 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
                 console.log("An error occured viewing the user pending tasks.");
                 displayError(data.message);
             });
-    }
+    };
 
     var getCompletedTasks = function() {
         var queryParams = {
@@ -181,7 +186,7 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
             .success(function(data, status, header, config) {
                 //console.log(data);
                 $scope.completedTasks = data.data;
-
+                console.log($scope.completedTasks);
                 for (var i = 0; i < $scope.completedTasks.length; i++) {
                     var d = (new Date($scope.completedTasks[i].deadline)).toDateString();
                     $scope.completedTasks[i].deadline = d;
@@ -208,7 +213,8 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
             displayError(data.message);
         });
 
-    $scope.getCompletedTasks = function() {
+    $scope.getCompletedTasksClick = function() {
+        console.log('get');
         getCompletedTasks();
     };
 
@@ -439,16 +445,42 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
     $scope.$watch('sortByField', $scope.reload, true);
     $scope.$watch('statusField', $scope.reload, true);
     $scope.$watch('orderingValue', $scope.reload, true);
-    // TODO delete task from task list + user it was assigned to if was, add task goto, task detail goto, 
+    // add task goto, task detail goto, goto from user view
 }]);
 
-mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData'  , function($scope, CommonData) {
-  $scope.data = "";
-   $scope.displayText = ""
+mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', function($scope, CommonData, $routeParams, mongoInterface) {
+    $scope.alert = '';
+    $scope.id = $routeParams.id;
 
-  $scope.setData = function(){
-    CommonData.setData($scope.data);
-    $scope.displayText = "Data set"
+    var displayError = function(msg) {
+        $scope.alert = msg;
+    }
 
-  };
+    // on load, get the task data
+    mongoInterface.get('tasks', $routeParams.id)
+        .success(function(data, status, header, config) {
+            console.log(data.data);
+            taskData = data.data;
+            $scope.taskData = taskData;
+            $scope.name = taskData.name;
+            $scope.email = taskData.email;
+
+            var d = (new Date(taskData.deadline)).toDateString();
+            $scope.deadline = d;
+
+            if (taskData.completed) {
+                $scope.status = 'Complete'
+            }
+            else {
+                $scope.status = 'Incomplete'
+            }
+            $scope.assignedTo = taskData.assignedUserName;
+        })
+        .error(function(data, status, header, config) {
+            console.log("An error occured viewing the user.");
+            displayError(data.message);
+        });
+
+
+
 }]);

@@ -24,7 +24,7 @@
                 </div>
                 <div class="row detail-row" ng-repeat="pending in pendingTasks"> 
                     <div class="small-6 columns">
-                        <h5>{{pending.name}}</h5>
+                        <h5 ng-click="goToTaskDetail(pending._id)">{{pending.name}}</h5>
                     </div>
                     <div class="small-4 columns">
                         <h5>{{pending.deadline}}</h5>
@@ -41,13 +41,13 @@
                 <h3>Completed Tasks</h3>
                 <div class="row" ng-repeat="completed in completedTasks">
                     <div class="small-6 columns">
-                        <h5>{{completed.name}}</h5>
+                        <h5 ng-click="goToTaskDetail(completed._id)">{{completed.name}}</h5>
                     </div>
                     <div class="small-6 columns">
                         <h5>{{completed.deadline}}</h5>
                     </div>
                 </div>
-                <a class="success button load-button" ng-click="getCompletedTasks()">Load Completed</a>
+                <a class="success button load-button" ng-click="getCompletedTasksClick()">Load Completed</a>
             </div> 
         </div>
         <div clas="row">

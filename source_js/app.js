@@ -22,7 +22,7 @@ app.config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/tasks.html',
     controller: 'TasksController'
   }).
-  when('/tasksdetails/:id', {
+  when('/taskdetails/:id', {
     templateUrl: 'partials/taskdetails.html',
     controller: 'TaskDetailController'
   }).

@@ -131,3 +131,21 @@ h1, h3, h4, h5, h6, p, li, div, a {
         width: 30%;
     }
 }
+
+#taskdetails-wrapper {
+    position: relative;
+
+    .row {
+        width: 95%;
+        margin-left: 0.5%;
+    }
+
+    .load-button {
+        width: 35% !important;
+        @include horizontal-align();
+    }
+
+    span {
+        color: red;
+    }
+}
