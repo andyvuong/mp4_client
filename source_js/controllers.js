@@ -1,4 +1,4 @@
-var mp4Controllers = angular.module('mp4Controllers', []);
+var mp4Controllers = angular.module('mp4Controllers', ['720kb.datepicker']);
 
 mp4Controllers.controller('SettingsController', ['$scope', '$window', 'mongoInterface', 'CommonData', function($scope, $window, mongoInterface, CommonData) {
 
@@ -480,7 +480,126 @@ mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData', '$rou
             console.log("An error occured viewing the user.");
             displayError(data.message);
         });
+}]);
+
+mp4Controllers.controller('TaskAddController', ['$scope', 'CommonData', 'mongoInterface', '$location', '$timeout', function($scope, CommonData, mongoInterface, $location, $timeout) {
+    $scope.name = '';
+    $scope.description = '';
+    $scope.deadline = '';
+    $scope.alert = '';
+    $scope.selectedUser = 'unassigned';
+    $scope.selectedUserId = '';
+
+    var displayError = function(msg) {
+        $scope.alert = msg;
+    };
+
+    $timeout(function() {
+        angular.element('#selector').val('unassigned');
+    }, 50);
+
+    // Get users for the dropdown
+    var getUsers = function() {
+        mongoInterface.get('users', {})
+            .success(function(data, status, headers, config) {
+                console.log(data.data);
+                $scope.users = data.data;
+            })
+            .error(function(data, status, headers, config) {
+                console.log('There was an error loading the data');
+            });   
+    }
+    
+    getUsers();
+
+    // gets the user id
+    var getSelectedUserId = function() {
+        if ($scope.selectedUser === 'unassigned') {
+            $scope.selectedUserId = '';
+        }
+        else if ($scope.users) {
+            for (var i = 0; i < $scope.users.length; i++) {
+                if ($scope.users[i].name === $scope.selectedUser) {
+                    $scope.selectedUserId = $scope.users[i]._id;
+                    break;
+                }
+            }
+        }
+    }
+/*
+    var getdeadline = function() {
+        if (typeof $scope.deadline === 'undefined' || $scope.deadline.length == 0) {
+            console.log(12);
+        }
+        else {
+        console.log($scope.deadline);
+        console.log((new Date($scope.deadline)).toDateString());
+    }
+    }
+    $scope.$watch('deadline', getdeadline, true);
+    */
+    $scope.$watch('selectedUser', getSelectedUserId, true);
+
+    // adds a new user to the app
+    $scope.addTask = function() {
+        if (typeof $scope.name === 'undefined' || $scope.name.length == 0
+            || typeof $scope.deadline === 'undefined' || $scope.deadline.length == 0) {
+            displayError('Validation Error: A valid name and deadline is required.');
+            $scope.name = '';
+            $scope.description = '';
+            $scope.deadline = '';
+        }
+        else {
+            mongoInterface.post('tasks', { name: $scope.name, deadline: $scope.deadline, description: $scope.description, completed: false, assignedUser: $scope.selectedUserId, assignedUserName: $scope.selectedUser})
+                .success(function(data, status, header, config) {
+                    console.log("Task was Added: " + data);
+                    $location.path('/tasks');
+                })
+                .error(function(data, status, header, config) {
+                    console.log("An error occured adding the user.");
+                    console.log(data.message);
+                    displayError(data.message);
+                });
+        }
+    };
+}]);
+
+mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', function($scope, CommonData, $routeParams, mongoInterface) {
+    $scope.alert = '';
+    $scope.id = $routeParams.id;
+    $scope.users = [];
+
+    var displayError = function(msg) {
+        $scope.alert = msg;
+    }
 
 
 
+
+/*
+    // on load, get the task data
+    mongoInterface.get('tasks', $routeParams.id)
+        .success(function(data, status, header, config) {
+            console.log(data.data);
+            taskData = data.data;
+            $scope.taskData = taskData;
+            $scope.name = taskData.name;
+            $scope.email = taskData.email;
+
+            var d = (new Date(taskData.deadline)).toDateString();
+            $scope.deadline = d;
+
+            if (taskData.completed) {
+                $scope.status = 'Complete'
+            }
+            else {
+                $scope.status = 'Incomplete'
+            }
+            $scope.assignedTo = taskData.assignedUserName;
+        })
+        .error(function(data, status, header, config) {
+            console.log("An error occured viewing the user.");
+            displayError(data.message);
+        });
+*/
 }]);

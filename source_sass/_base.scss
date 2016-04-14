@@ -84,6 +84,24 @@ h1, h3, h4, h5, h6, p, li, div, a {
     }
 }
 
+#addtask-wrapper {
+    position: relative;
+
+    .row {
+        width: 85%;
+        margin-left: 0.5%;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    span {
+        color: red;
+    }
+}
+
+
 #userdetails-wrapper {
     position: relative;
 

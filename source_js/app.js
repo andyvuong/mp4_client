@@ -26,6 +26,14 @@ app.config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/taskdetails.html',
     controller: 'TaskDetailController'
   }).
+  when('/taskadd', {
+    templateUrl: 'partials/taskadd.html',
+    controller: 'TaskAddController'
+  }).
+  when('/taskedit/:id', {
+    templateUrl: 'partials/taskedit.html',
+    controller: 'TaskEditController'
+  }).
   otherwise({
     redirectTo: '/settings'
   });
