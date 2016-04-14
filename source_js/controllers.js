@@ -375,7 +375,7 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
     };
 
     // listens for any of the user options to change and makes an api call
-    $scope.reload = function() { // TODO sortby
+    $scope.reload = function() {
         $scope.paginationStart = 0; // reset pagination
         reloadTaskList($scope.orderingValue, $scope.sortByField, $scope.statusField, $scope.paginationStart);
     };
@@ -550,10 +550,40 @@ mp4Controllers.controller('TaskAddController', ['$scope', 'CommonData', 'mongoIn
             $scope.deadline = '';
         }
         else {
+            var id = $scope.selectedUserId;
             mongoInterface.post('tasks', { name: $scope.name, deadline: $scope.deadline, description: $scope.description, completed: false, assignedUser: $scope.selectedUserId, assignedUserName: $scope.selectedUser})
                 .success(function(data, status, header, config) {
                     console.log("Task was Added: " + data);
-                    $location.path('/tasks');
+                    var taskid = data.data._id;
+
+                    // add task to user pending id
+                    if ($scope.selectedUser !== 'unassigned') {  
+
+                        mongoInterface.get('users', id)
+                            .success(function(data, status, header, config) {
+                                // get user list, push id onto it, and put
+                                var userData = data.data;
+                                var pending = userData.pendingTasks;
+                                pending.push(taskid);
+
+                                mongoInterface.put('users', id, { pendingTasks: pending})
+                                    .success(function(data, status, header, config) {
+                                        console.log("User was updated: " + data);
+                                        $location.path('/tasks');
+                                    })
+                                    .error(function(data, status, header, config) {
+                                        console.log("An error occured adding the user.");
+                                        displayError(data.message);
+                                    });
+                            })
+                            .error(function(data, status, header, config) {
+                                console.log("An error occured viewing the user.");
+                                displayError(data.message);
+                            });
+                    }
+                    else {
+                        $location.path('/tasks');
+                    }
                 })
                 .error(function(data, status, header, config) {
                     console.log("An error occured adding the user.");
