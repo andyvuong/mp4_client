@@ -598,7 +598,7 @@ mp4Controllers.controller('TaskAddController', ['$scope', 'CommonData', 'mongoIn
     };
 }]);
 
-mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', '$timeout', function($scope, CommonData, $routeParams, mongoInterface, $timeout) {
+mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', '$timeout', '$location', function($scope, CommonData, $routeParams, mongoInterface, $timeout, $location) {
     $scope.alert = '';
     $scope.id = $routeParams.id;
 
@@ -607,6 +607,8 @@ mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$route
     $scope.deadline = '';
     $scope.selectedUser = 'unassigned';
     $scope.selectedUserId = '';
+
+    var old = {};
 
     var displayError = function(msg) {
         $scope.alert = msg;
@@ -626,6 +628,7 @@ mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$route
                 $scope.selectedUser = taskData.assignedUserName;
                 $scope.selectedUserId = taskData.assignedUser;
                 $scope.status = taskData.completed;
+
                 $timeout(function() {
                     if ($scope.status) {
                         angular.element('#selectStatus').val('true');    
@@ -675,31 +678,110 @@ mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$route
         }
     }
     $scope.$watch('selectedUser', getSelectedUserId, true);
+    
+    function toBool() {
+        if ($scope.status === 'true' || $scope.status === true) {
+            $scope.status = true;
+        }
+        else {
+            $scope.status = false;
+        }
+    }
+    $scope.$watch('status', toBool, true);
 
-/*
-    // on load, get the task data
-    mongoInterface.get('tasks', $routeParams.id)
-        .success(function(data, status, header, config) {
-            console.log(data.data);
-            taskData = data.data;
-            $scope.taskData = taskData;
-            $scope.name = taskData.name;
-            $scope.email = taskData.email;
+    function removePendingFromUser(userId, taskId) {
+        if (taskData.assignedUserName !== 'unassigned') {
+            mongoInterface.get('users', userId)
+                .success(function(data, status, header, config) {
+                    // get user list, push id onto it, and put
+                    var userData = data.data;
+                    var pending = userData.pendingTasks;
+                    
+                    for (var i = 0; i < pending.length; i++) {
+                        if (pending[i] === taskId) {
+                            pending.splice(i, 1); // remove taskid from pending
+                            break;
+                        }
+                    }
 
-            var d = (new Date(taskData.deadline)).toDateString();
-            $scope.deadline = d;
+                    mongoInterface.put('users', userId, { pendingTasks: pending})
+                        .success(function(data, status, header, config) {
+                            //console.log("User was updated: " + data);
 
-            if (taskData.completed) {
-                $scope.status = 'Complete'
-            }
-            else {
-                $scope.status = 'Incomplete'
-            }
-            $scope.assignedTo = taskData.assignedUserName;
-        })
-        .error(function(data, status, header, config) {
-            console.log("An error occured viewing the user.");
-            displayError(data.message);
-        });
-*/
+                            addPendingToUser($scope.selectedUserId, $scope.id);
+                        })
+                        .error(function(data, status, header, config) {
+                            console.log("An error occured adding the user.");
+                            displayError(data.message);
+                        });
+                })
+                .error(function(data, status, header, config) {
+                    console.log("An error occured viewing the user.");
+                    displayError(data.message);
+                });
+        }
+    }
+
+    function addPendingToUser(userId, taskId) {
+        //console.log($scope.selectedUser);
+        //console.log($scope.status)
+        if ($scope.status === false && $scope.selectedUser !== 'unassigned') {
+            mongoInterface.get('users', userId)
+                .success(function(data, status, header, config) {
+                    // get user list, push id onto it, and put
+                    var userData = data.data;
+                    var pending = userData.pendingTasks;
+                    pending.push(taskId);
+
+                    mongoInterface.put('users', userId, { pendingTasks: pending})
+                        .success(function(data, status, header, config) {
+                            console.log("User was updated: " + data);
+                        })
+                        .error(function(data, status, header, config) {
+                            console.log("An error occured adding the user.");
+                            displayError(data.message);
+                        });
+                })
+                .error(function(data, status, header, config) {
+                    console.log("An error occured viewing the user.");
+                    displayError(data.message);
+                });
+        }
+    }
+
+    $scope.submitTask = function() {
+        if (typeof $scope.name === 'undefined' || $scope.name.length == 0
+            || typeof $scope.deadline === 'undefined' || $scope.deadline.length == 0) {
+            displayError('Validation Error: A valid name and deadline is required.');
+            $scope.name = '';
+            $scope.description = '';
+            $scope.deadline = '';
+        }
+        else {
+            // put the task inside
+            mongoInterface.put('tasks', $scope.id, { name: $scope.name, deadline: $scope.deadline, description: $scope.description, completed: $scope.status, assignedUser: $scope.selectedUserId, assignedUserName: $scope.selectedUser})
+                .success(function(data, status, header, config) {
+                    //console.log("Task was updated: " + data);
+                    var newTask = data.data;
+                    var taskid = data.data._id;
+
+                    // remove pending id from all users involved unless the user was unassigned
+                    removePendingFromUser(taskData.assignedUser, $scope.id);
+                    // readd the pending id if the status is false and the user is not unassigned
+                    console.log($scope.selectedUserId);
+
+
+                    // if t to f, new user, add to new user | old user, add to old user
+                    // if f to t, remove from old user
+                    // if same user same, do nothin to pending
+
+                    $location.path('/taskdetails/'+$scope.id);
+                })
+                .error(function(data, status, header, config) {
+                    console.log("An error occured updating the task.");
+                    console.log(data.message);
+                    displayError(data.message);
+                });
+        }
+    };
 }]);
