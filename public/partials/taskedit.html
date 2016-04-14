@@ -1,4 +1,54 @@
 <div>
-    
-    
+    <div id="addtask-wrapper">
+        <div class="row">
+            <div class="small-12 columns">
+                <h2>Edit Task</h2>
+            </div>    
+            <hr>
+        </div>
+        <div class="row">
+            <div class="small-12 columns">
+                <label>
+                    Name <span>*</span>
+                    <input type="text" placeholder="Task Title" ng-model="name">
+                </label>
+                <label>
+                    Description
+                    <input type="text" placeholder="A description of your task" ng-model="description">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <h6>Assigned User:</h6>
+            <select ng-model='selectedUser' id="selector">
+                <option value="unassigned">unassigned</option>
+                <option ng-repeat="user in users" value="{{user.name}}">{{user.name}}</option>
+            </select>
+        </div>
+        <div class="row">
+            <span>*</span>
+            <datepicker>
+                <input ng-model="deadline" type="text"/>
+            </datepicker>
+        </div>
+        <div class="row">
+            <h5>Completed:</h5>
+            <select ng-model='status' id="selectStatus">
+                <option value="true">true</option>
+                <option value="false">false</option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="small-4 columns"></div>
+            <div class="small-4 columns">
+                <a href="#/taskdetails/{{id}}" class="alert button">Cancel</a>
+            </div> 
+            <div class="small-4 columns"> 
+                <a href="#/taskdetails/{{id}}" class="success button" ng-click="addTask()">Add</a>
+            </div>  
+        </div>
+        <div clas="row">
+            <span>{{alert}}</span>
+        </div>
+    </div>
 </div>

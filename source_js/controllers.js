@@ -448,12 +448,16 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
     // add task goto, task detail goto, goto from user view
 }]);
 
-mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', function($scope, CommonData, $routeParams, mongoInterface) {
+mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', '$location', function($scope, CommonData, $routeParams, mongoInterface, $location) {
     $scope.alert = '';
     $scope.id = $routeParams.id;
 
     var displayError = function(msg) {
         $scope.alert = msg;
+    }
+
+    $scope.goToTaskEdit = function(id) {
+        $location.path('/taskedit/'+id);
     }
 
     // on load, get the task data
@@ -594,17 +598,83 @@ mp4Controllers.controller('TaskAddController', ['$scope', 'CommonData', 'mongoIn
     };
 }]);
 
-mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', function($scope, CommonData, $routeParams, mongoInterface) {
+mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$routeParams', 'mongoInterface', '$timeout', function($scope, CommonData, $routeParams, mongoInterface, $timeout) {
     $scope.alert = '';
     $scope.id = $routeParams.id;
-    $scope.users = [];
+
+    $scope.name = '';
+    $scope.description = '';
+    $scope.deadline = '';
+    $scope.selectedUser = 'unassigned';
+    $scope.selectedUserId = '';
 
     var displayError = function(msg) {
         $scope.alert = msg;
     }
 
+    // load the current task details
+    var loadUserDetails = function() {
+        mongoInterface.get('tasks', $routeParams.id)
+            .success(function(data, status, header, config) {
+                console.log(data.data);
+                taskData = data.data;
+                $scope.taskData = taskData;
 
+                $scope.name = taskData.name;
+                $scope.deadline = taskData.deadline;
+                $scope.description = taskData.description;
+                $scope.selectedUser = taskData.assignedUserName;
+                $scope.selectedUserId = taskData.assignedUser;
+                $scope.status = taskData.completed;
+                $timeout(function() {
+                    if ($scope.status) {
+                        angular.element('#selectStatus').val('true');    
+                    }
+                    else {
+                        angular.element('#selectStatus').val('false');
+                    }
+                    
+                    angular.element('#selector').val($scope.selectedUser);
+                }, 5);
 
+            })
+            .error(function(data, status, header, config) {
+                console.log("An error occured viewing the user.");
+                displayError(data.message);
+        });
+    }
+
+    // Get users for the dropdown
+    var getUsers = function() {
+        mongoInterface.get('users', {})
+            .success(function(data, status, headers, config) {
+                console.log(data.data);
+                $scope.users = data.data;
+                loadUserDetails();
+            })
+            .error(function(data, status, headers, config) {
+                console.log('There was an error loading the data');
+            });   
+    }
+    
+    getUsers();
+
+    // gets the user id
+    var getSelectedUserId = function() {
+        if ($scope.selectedUser === 'unassigned') {
+            $scope.selectedUserId = '';
+        }
+        else if ($scope.users) {
+            for (var i = 0; i < $scope.users.length; i++) {
+                if ($scope.users[i].name === $scope.selectedUser) {
+                    $scope.selectedUserId = $scope.users[i]._id;
+                    console.log($scope.selectedUserId);
+                    break;
+                }
+            }
+        }
+    }
+    $scope.$watch('selectedUser', getSelectedUserId, true);
 
 /*
     // on load, get the task data
