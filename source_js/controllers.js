@@ -474,6 +474,7 @@ mp4Controllers.controller('TaskDetailController', ['$scope', 'CommonData', '$rou
             $scope.taskData = taskData;
             $scope.name = taskData.name;
             $scope.email = taskData.email;
+            $scope.description = taskData.description;
 
             var d = (new Date(taskData.deadline)).toDateString();
             $scope.deadline = d;
