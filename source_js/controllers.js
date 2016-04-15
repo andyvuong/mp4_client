@@ -42,7 +42,7 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
 
     // updates a task and sets assigned properties
     var updateTask = function(id, taskItem) {
-        mongoInterface.put('tasks', id, { assignedUser: "", assignedUserName: "unassigned", name: taskItem.name, deadline: taskItem.deadline })
+        mongoInterface.put('tasks', id, { assignedUser: "", assignedUserName: "unassigned", name: taskItem.name, deadline: taskItem.deadline, description: taskItem.description, completed: taskItem.completed })
             .success(function(data, status, header, config) {
                 console.log("Task was updated")
             })
@@ -244,9 +244,9 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
     }
 
     // updates the task and updates the user's pending tasks
-    $scope.markComplete = function(taskId, userId, nameVal, deadlineVal) {
+    $scope.markComplete = function(taskId, userId, nameVal, deadlineVal, descriptionVal, assignedUserVal, assignedUserIdVal ) {
         //console.log(taskId);
-        mongoInterface.put('tasks', taskId, { name: nameVal, deadline: deadlineVal, completed: true})
+        mongoInterface.put('tasks', taskId, { name: nameVal, deadline: deadlineVal, completed: true, description: descriptionVal, assignedUserName: assignedUserVal, assignedUser: assignedUserIdVal})
             .success(function(data, status, header, config) {
                 console.log("Task was updated: " + data);
                 updateUserPending(userId, taskId);
