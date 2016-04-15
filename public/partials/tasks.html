@@ -42,7 +42,7 @@
         <div class="row" ng-repeat="task in tasks">
             <hr>
             <div class="small-5 columns">
-                <h5 ng-click="goToTaskDetail(task._id)">{{task.name}}</h5>
+                <h5 class="link" ng-click="goToTaskDetail(task._id)">{{task.name}}</h5>
             </div>
             <div class="small-5 columns">
                 <h6><strong>Deadline:</strong> {{task.deadline}}</h6>

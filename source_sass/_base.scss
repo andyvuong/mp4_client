@@ -1,5 +1,9 @@
 h1, h3, h4, h5, h6, p, li, div, a {
-    font-family: $font-fira;
+    font-family: $font-voce;
+}
+
+.appname {
+    background: #4E4D4A;
 }
 
 #main-menu {
@@ -167,3 +171,13 @@ h1, h3, h4, h5, h6, p, li, div, a {
         color: red;
     }
 }
+
+.link {
+    color: #058789;
+}
+
+.link:hover {
+    color: #F88863;
+    cursor: pointer;
+}
+

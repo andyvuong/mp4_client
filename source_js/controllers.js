@@ -710,7 +710,7 @@ mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$route
                         }
                     }
 
-                    mongoInterface.put('users', userId, { pendingTasks: pending})
+                    mongoInterface.put('users', userId, { pendingTasks: pending, name: userData.name, email: userData.email})
                         .success(function(data, status, header, config) {
                             //console.log("User was updated: " + data);
 

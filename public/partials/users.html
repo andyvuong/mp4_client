@@ -11,7 +11,7 @@
         </div>
         <div class="row" ng-repeat='user in data.users'>
             <div class="small-5 columns">
-                <h5 ng-click="goToUserDetail(user._id)">{{user.name}}</h5>
+                <h5 class="link" ng-click="goToUserDetail(user._id)">{{user.name}}</h5>
             </div>
             <div class="small-5 columns">
                 <h5>{{user.email}}</h5>
