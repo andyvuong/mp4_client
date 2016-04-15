@@ -32,6 +32,7 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
             })
             .error(function(data, status, headers, config) {
                 console.log('There was an error loading the data');
+                console.log(data.message);
             });
     };
 
@@ -40,13 +41,14 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
     }
 
     // updates a task and sets assigned properties
-    var updateTask = function(id) {
-        mongoInterface.put('tasks', id, { assignedUser: "", assignedUserName: "unassigned" })
+    var updateTask = function(id, taskItem) {
+        mongoInterface.put('tasks', id, { assignedUser: "", assignedUserName: "unassigned", name: taskItem.name, deadline: taskItem.deadline })
             .success(function(data, status, header, config) {
                 console.log("Task was updated")
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured adding the user.");
+                console.log(data.message);
             });
     }
 
@@ -62,11 +64,12 @@ mp4Controllers.controller('UsersController', ['$scope', 'CommonData', 'mongoInte
                 //console.log(data);
                 taskList = data.data;
                 for (var i = 0; i < taskList.length; i++) {
-                    updateTask(taskList[i]._id);
+                    updateTask(taskList[i]._id, taskList[i]);
                 }
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured updated the tasks of the deleted user.");
+                console.log(data.message);
             }); 
 
     };
@@ -204,6 +207,7 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
         .success(function(data, status, header, config) {
             console.log(data.data);
             userData = data.data;
+            $scope.userData = userData;
             $scope.name = userData.name;
             $scope.email = userData.email;
             getPendingTasks();
@@ -228,7 +232,7 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
         }
 
         // update the user
-        mongoInterface.put('users', userId, { pendingTasks: updatedPending})
+        mongoInterface.put('users', userId, { name: $scope.userData.name, email: $scope.userData.email, pendingTasks: updatedPending})
             .success(function(data, status, header, config) {
                 console.log("User was updated: " + data);
                 getPendingTasks();
@@ -240,9 +244,9 @@ mp4Controllers.controller('UserDetailController', ['$scope', 'CommonData', 'mong
     }
 
     // updates the task and updates the user's pending tasks
-    $scope.markComplete = function(taskId, userId) {
-        console.log(taskId);
-        mongoInterface.put('tasks', taskId, { completed: true})
+    $scope.markComplete = function(taskId, userId, nameVal, deadlineVal) {
+        //console.log(taskId);
+        mongoInterface.put('tasks', taskId, { name: nameVal, deadline: deadlineVal, completed: true})
             .success(function(data, status, header, config) {
                 console.log("Task was updated: " + data);
                 updateUserPending(userId, taskId);
@@ -400,16 +404,18 @@ mp4Controllers.controller('TasksController', ['$scope', 'CommonData', '$timeout'
                 }
 
                 // update the user
-                mongoInterface.put('users', userId, { pendingTasks: pending})
+                mongoInterface.put('users', userId, { pendingTasks: pending, name: user.name, email: user.email })
                     .success(function(data, status, header, config) {
                         console.log("User was updated: " + data);
                     })
                     .error(function(data, status, header, config) {
                         console.log("An error occured updating the user.");
+                        console.log(data.message);
                     });
             })
             .error(function(data, status, header, config) {
                 console.log("An error occured updated the tasks of the deleted user.");
+                console.log(data.message);
             }); 
     };
 
@@ -570,7 +576,7 @@ mp4Controllers.controller('TaskAddController', ['$scope', 'CommonData', 'mongoIn
                                 var pending = userData.pendingTasks;
                                 pending.push(taskid);
 
-                                mongoInterface.put('users', id, { pendingTasks: pending})
+                                mongoInterface.put('users', id, { pendingTasks: pending, name: userData.name, email: userData.email })
                                     .success(function(data, status, header, config) {
                                         console.log("User was updated: " + data);
                                         $location.path('/tasks');
@@ -733,7 +739,7 @@ mp4Controllers.controller('TaskEditController', ['$scope', 'CommonData', '$route
                     var pending = userData.pendingTasks;
                     pending.push(taskId);
 
-                    mongoInterface.put('users', userId, { pendingTasks: pending})
+                    mongoInterface.put('users', userId, { pendingTasks: pending, name: userData.name, email: userData.email })
                         .success(function(data, status, header, config) {
                             console.log("User was updated: " + data);
                         })
